@@ -163,4 +163,7 @@ Notes: SQLite lives on the persistent volume (`/data/licenses.db`); without the 
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+PolyForm Noncommercial 1.0.0 — see [LICENSE](LICENSE).
+
+You may use, modify and share this project for **noncommercial purposes only**.
+Commercial use — including selling the software or modified versions — is prohibited.
