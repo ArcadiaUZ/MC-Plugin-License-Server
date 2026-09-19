@@ -1,0 +1,12 @@
+{
+  "port": 3001,
+  "adminUsername": "admin",
+  "adminPassword": "",
+  "jwtSecret": "",
+  "rateLimit": {
+    "windowMs": 60000,
+    "maxRequests": 10
+  },
+  "licenseKeyPrefix": "EPIC",
+  "licenseKeyLength": 32
+}

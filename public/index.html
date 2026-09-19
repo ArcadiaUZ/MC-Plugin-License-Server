@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EpicServer - License Manager</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-page">
+        <div class="login-container">
+            <div class="login-card">
+                <div class="login-logo">
+                    <div class="logo-icon">⚡</div>
+                    <h1>EpicServer</h1>
+                    <p>License Management Dashboard</p>
+                </div>
+                <form class="login-form" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <div class="input-group">
+                            <span class="input-icon"><i class="fas fa-user"></i></span>
+                            <input type="text" id="loginUsername" placeholder="Enter your username" required autocomplete="username">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <div class="input-group">
+                            <span class="input-icon"><i class="fas fa-lock"></i></span>
+                            <input type="password" id="loginPassword" placeholder="Enter your password" required autocomplete="current-password">
+                        </div>
+                    </div>
+                    <button type="submit" class="login-btn" id="loginBtn">
+                        <span class="btn-text">Sign In</span>
+                        <span class="spinner"></span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Layout -->
+    <div id="appLayout" class="app-layout hidden">
+        <!-- Sidebar Overlay (mobile) -->
+        <div id="sidebarOverlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">⚡</div>
+                <div class="brand-text">
+                    <h2>EpicServer</h2>
+                    <span>License Manager</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav" id="sidebarNav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <a class="nav-item active" data-route="dashboard" onclick="navigateTo('dashboard')">
+                        <span class="nav-icon"><i class="fas fa-th-large"></i></span>
+                        Dashboard
+                    </a>
+                    <a class="nav-item" data-route="licenses" onclick="navigateTo('licenses')">
+                        <span class="nav-icon"><i class="fas fa-key"></i></span>
+                        Licenses
+                    </a>
+                    <a class="nav-item" data-route="plugins" onclick="navigateTo('plugins')">
+                        <span class="nav-icon"><i class="fas fa-puzzle-piece"></i></span>
+                        Plugins
+                    </a>
+                    <a class="nav-item" data-route="servers" onclick="navigateTo('servers')">
+                        <span class="nav-icon"><i class="fas fa-server"></i></span>
+                        Servers
+                    </a>
+                    <a class="nav-item" data-route="customers" onclick="navigateTo('customers')">
+                        <span class="nav-icon"><i class="fas fa-users"></i></span>
+                        Customers
+                    </a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Analytics</div>
+                    <a class="nav-item" data-route="analytics" onclick="navigateTo('analytics')">
+                        <span class="nav-icon"><i class="fas fa-chart-line"></i></span>
+                        Analytics
+                    </a>
+                    <a class="nav-item" data-route="logs" onclick="navigateTo('logs')">
+                        <span class="nav-icon"><i class="fas fa-list"></i></span>
+                        Logs
+                    </a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Management</div>
+                    <a class="nav-item" data-route="updates" onclick="navigateTo('updates')">
+                        <span class="nav-icon"><i class="fas fa-cloud-upload-alt"></i></span>
+                        Auto Updates
+                    </a>
+                    <a class="nav-item" data-route="crashes" onclick="navigateTo('crashes')">
+                        <span class="nav-icon"><i class="fas fa-bug"></i></span>
+                        Crash Reports
+                    </a>
+                    <a class="nav-item" data-route="security" onclick="navigateTo('security')">
+                        <span class="nav-icon"><i class="fas fa-shield-alt"></i></span>
+                        Security
+                    </a>
+                    <a class="nav-item" data-route="notifications" onclick="navigateTo('notifications')">
+                        <span class="nav-icon"><i class="fas fa-bell"></i></span>
+                        Notifications
+                        <span class="nav-badge" id="notifBadge">0</span>
+                    </a>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">System</div>
+                    <a class="nav-item" data-route="settings" onclick="navigateTo('settings')">
+                        <span class="nav-icon"><i class="fas fa-cog"></i></span>
+                        Settings
+                    </a>
+                    <a class="nav-item" data-route="api-docs" onclick="navigateTo('api-docs')">
+                        <span class="nav-icon"><i class="fas fa-code"></i></span>
+                        API Docs
+                    </a>
+                </div>
+            </nav>
+            <div class="sidebar-footer">
+                <a class="nav-item" onclick="handleLogout()">
+                    <span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span>
+                    Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-left">
+                    <button class="sidebar-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div>
+                        <div class="page-title" id="pageTitle">Dashboard</div>
+                        <div class="page-breadcrumb" id="pageBreadcrumb">Overview & statistics</div>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button class="header-btn" onclick="refreshCurrentPage()" title="Refresh">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <button class="header-btn" onclick="navigateTo('notifications')" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge-dot" id="headerNotifDot" style="display:none"></span>
+                    </button>
+                    <button class="header-btn" onclick="toggleDarkMode()" title="Toggle Theme">
+                        <i class="fas fa-moon" id="themeIcon"></i>
+                    </button>
+                    <div class="header-admin" onclick="navigateTo('settings')">
+                        <div class="admin-avatar">A</div>
+                        <div class="admin-info">
+                            <div class="admin-name" id="adminName">Admin</div>
+                            <div class="admin-role">Administrator</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="page-content" id="pageContent">
+                <!-- Dynamic content rendered here -->
+            </div>
+
+            <!-- Footer -->
+            <footer class="app-footer">
+                <div class="footer-left">
+                    <span>Powered by <strong>Epic Plugins</strong></span>
+                    <span>v<span id="footerVersion">1.0.0</span></span>
+                </div>
+                <div class="footer-right">
+                    <div class="status-indicator">
+                        <span class="status-dot online" id="serverStatusDot"></span>
+                        <span id="serverStatusText">Online</span>
+                    </div>
+                    <span id="footerGit">© EpicServer</span>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/animator.js"></script>
+    <script src="js/pages/dashboard.js"></script>
+    <script src="js/pages/licenses.js"></script>
+    <script src="js/pages/plugins.js"></script>
+    <script src="js/pages/servers.js"></script>
+    <script src="js/pages/analytics.js"></script>
+    <script src="js/pages/logs.js"></script>
+    <script src="js/pages/notifications.js"></script>
+    <script src="js/pages/customers.js"></script>
+    <script src="js/pages/settings.js"></script>
+    <script src="js/pages/updates.js"></script>
+    <script src="js/pages/crashes.js"></script>
+    <script src="js/pages/security.js"></script>
+    <script src="js/pages/api-docs.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

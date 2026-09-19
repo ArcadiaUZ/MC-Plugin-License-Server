@@ -1,0 +1,21 @@
+{
+  "name": "epic-license-server",
+  "version": "1.0.0",
+  "description": "License validation server for Minecraft plugins (HWID binding, admin dashboard, crash reports)",
+  "main": "server.js",
+  "license": "MIT",
+  "keywords": ["minecraft", "license", "paper", "spigot", "express", "sqlite"],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "better-sqlite3": "^9.4.3",
+    "cors": "^2.8.5",
+    "uuid": "^9.0.0",
+    "bcryptjs": "^2.4.3"
+  }
+}
