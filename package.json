@@ -1,7 +1,7 @@
 {
   "name": "epic-license-server",
   "version": "1.0.0",
-  "description": "License validation server for Minecraft plugins (HWID binding, admin dashboard, crash reports)",
+  "description": "Minecraft plaginlari uchun litsenziya tekshirish serveri (HWID bog'lash, admin panel, crash hisobotlar)",
   "main": "server.js",
   "license": "PolyForm-Noncommercial-1.0.0",
   "keywords": ["minecraft", "license", "paper", "spigot", "express", "sqlite"],

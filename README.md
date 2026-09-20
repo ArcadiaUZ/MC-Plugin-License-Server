@@ -1,80 +1,80 @@
 # Epic License Server
 
-License validation server for Minecraft (Paper/Spigot) premium plugins — with HWID binding, admin dashboard, crash reports, server heartbeat tracking, and Fly.io deployment.
+Minecraft (Paper/Spigot) premium plaginlari uchun litsenziya tekshirish serveri — HWID bog'lash, admin panel, crash hisobotlar, server heartbeat kuzatuvi va Fly.io da deploy bilan.
 
-Stack: **Node.js + Express + SQLite (better-sqlite3)** · No build step · Vanilla JS dashboard (Chart.js).
+Stek: **Node.js + Express + SQLite (better-sqlite3)** · Build shart emas · Vanilla JS dashboard (Chart.js).
 
-## Features
+## Imkoniyatlar
 
-- **License lifecycle** — create (`EPIC-XXXX-...`), list/filter/search/sort/paginate, update, copy, revoke/activate, delete
-- **Verification (`POST /api/verify`)** — status check, expiry check, plugin-name check, HWID auto-bind + mismatch detection, server-session tracking
-- **HWID binding** — first verify binds, later verifies must match; admin can reset (`POST /api/license/:key/reset-hwid`)
-- **Servers** — online/all sessions, heartbeat (`POST /api/servers/heartbeat`) with players/country tracking
-- **Crash reports** — plugins submit (`POST /api/crashes`), admin resolve/ignore/delete
-- **Plugins registry** — CRUD + version publishing (`POST /api/plugin/:name/version`) for auto-updates
-- **Customers, activity logs, analytics** (30-day / 12-month charts, top plugins, status distribution), security events, notifications, settings
-- **Admin dashboard** (`public/`) — login (Basic Auth), dark mode, responsive sidebar, API docs page
-- **Deploy-ready** — `Dockerfile` (multi-stage, non-root, healthcheck), `fly.toml` + volume for SQLite persistence
-- **Env overrides** — `PORT`, `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `JWT_SECRET`, `DB_PATH` override `config.json`
+- **Litsenziya sikli** — yaratish (`EPIC-XXXX-...`), ro'yxat/filtr/qidiruv/saralash/sahifalash, yangilash, nusxalash, bekor qilish/faollashtirish, o'chirish
+- **Tekshirish (`POST /api/verify`)** — holat tekshiruvi, muddat tekshiruvi, plagin nomi tekshiruvi, HWID avtomatik bog'lash + nomuvofiqlikni aniqlash, server sessiya kuzatuvi
+- **HWID bog'lash** — birinchi tekshirishda bog'lanadi, keyingilari mos kelishi shart; admin reset qila oladi (`POST /api/license/:key/reset-hwid`)
+- **Serverlar** — onlayn/barcha sessiyalar, heartbeat (`POST /api/servers/heartbeat`) bilan o'yinchi/davlat kuzatuvi
+- **Crash hisobotlar** — plaginlar yuboradi (`POST /api/crashes`), admin hal qilindi/e'tiborsiz/o'chirish qiladi
+- **Plaginlar reyestri** — CRUD + versiya nashr qilish (`POST /api/plugin/:name/version`) — avtomatik yangilanish uchun
+- **Mijozlar, harakatlar jurnali, analitika** (30 kunlik / 12 oylik grafiklar, top plaginlar, holat taqsimoti), xavfsizlik hodisalari, bildirishnomalar, sozlamalar
+- **Admin panel (`public/`)** — login (Basic Auth), qorong'u rejim, moslashuvchan sidebar, API hujjat sahifasi
+- **Deployga tayyor** — `Dockerfile` (multi-stage, non-root, healthcheck), `fly.toml` + SQLite saqlanishi uchun volume
+- **Env orqali sozlash** — `PORT`, `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `JWT_SECRET`, `DB_PATH` — `config.json` ni bekor qiladi
 
-## Project structure
+## Loyiha tuzilmasi
 
 ```
 .
-├── server.js            # Express API + SQLite schema + static hosting
-├── public/              # Admin dashboard (index.html, css/, js/ incl. js/pages/*)
-├── config.example.json  # Copy to config.json for local dev
-├── .env.example         # Env-var overrides (recommended for production)
-├── Dockerfile           # Fly.io / Docker deploy (port 8080, /data volume)
-├── fly.toml             # Fly.io app config
-├── fly-deployment/      # Step-by-step Fly.io guide
-├── start.sh             # Local start helper (./start.sh [port])
+├── server.js            # Express API + SQLite sxema + statik hosting
+├── public/              # Admin panel (index.html, css/, js/ va js/pages/*)
+├── config.example.json  # Lokal dev uchun config.json ga nusxalang
+├── .env.example         # Env o'zgaruvchilar (production uchun tavsiya)
+├── Dockerfile           # Fly.io / Docker deploy (8080 port, /data volume)
+├── fly.toml             # Fly.io app konfiguratsiyasi
+├── fly-deployment/      # Fly.io bo'yicha bosqichma-bosqich qo'llanma
+├── start.sh             # Lokal ishga tushirish yordamchisi (./start.sh [port])
 └── package.json
 ```
 
-Database tables (auto-created): `licenses`, `verification_log`, `admins`, `plugins`, `plugin_versions`, `activity_log`, `notifications`, `server_sessions`, `crash_reports`, `security_events`, `settings`, `customers`.
+Ma'lumotlar bazasi jadvallari (avtomatik yaratiladi): `licenses`, `verification_log`, `admins`, `plugins`, `plugin_versions`, `activity_log`, `notifications`, `server_sessions`, `crash_reports`, `security_events`, `settings`, `customers`.
 
-## Quick start (local)
+## Tezkor boshlash (lokal)
 
-Requirements: Node.js 20+.
+Talab: Node.js 20+.
 
 ```bash
-# 1. Install
+# 1. O'rnatish
 npm install
 
-# 2. Configure (pick ONE)
-cp config.example.json config.json        # then edit adminPassword / jwtSecret
-# ...or use env vars (recommended):
-# cp .env.example .env  (then export, or set in your shell/host)
+# 2. Sozlash (BITTASINI tanlang)
+cp config.example.json config.json        # keyin adminPassword / jwtSecret ni tahrirlang
+# ...yoki env o'zgaruvchilar (tavsiya etiladi):
+# cp .env.example .env  (keyin export qiling yoki shell/host da o'rnating)
 
-# 3. Run
+# 3. Ishga tushirish
 npm start
-# or: ./start.sh 3001
-# or:  PORT=3001 ADMIN_USERNAME=admin ADMIN_PASSWORD=secret JWT_SECRET=$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))") node server.js
+# yoki: ./start.sh 3001
+# yoki:  PORT=3001 ADMIN_USERNAME=admin ADMIN_PASSWORD=secret JWT_SECRET=$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))") node server.js
 ```
 
-Open: `http://localhost:3001` (dashboard) · `http://localhost:3001/api/health` (health check).
+Ochish: `http://localhost:3001` (panel) · `http://localhost:3001/api/health` (holat tekshiruvi).
 
-> First run creates the default admin from `ADMIN_USERNAME`/`ADMIN_PASSWORD` (bcrypt-hashed in SQLite). Change the password via dashboard → Settings.
+> Birinchi ishga tushirishda standart admin `ADMIN_USERNAME`/`ADMIN_PASSWORD` dan yaratiladi (SQLite da bcrypt bilan xeshlanadi). Parolni panel → Sozlamalar orqali o'zgartiring.
 
-## Configuration
+## Konfiguratsiya
 
-| Source | Key | Default | Notes |
+| Manba | Kalit | Standart | Izoh |
 |---|---|---|---|
-| env `PORT` / `config.port` | port | `3001` | Fly.io sets `8080` via Dockerfile |
+| env `PORT` / `config.port` | port | `3001` | Fly.io Dockerfile orqali `8080` beradi |
 | env `ADMIN_USERNAME` / `config.adminUsername` | admin login | `admin` | |
-| env `ADMIN_PASSWORD` / `config.adminPassword` | admin password | `admin123` ⚠️ | **Must change in production** |
-| env `JWT_SECRET` / `config.jwtSecret` | HWID hash salt | built-in default ⚠️ | **Must change in production** |
-| env `DB_PATH` | sqlite path | `./licenses.db` | Fly.io: `/data/licenses.db` |
-| `config.licenseKeyPrefix` | key prefix | `EPIC` | e.g. `EPIC-A1B2-...` |
+| env `ADMIN_PASSWORD` / `config.adminPassword` | admin parol | `admin123` ⚠️ | **Production da o'zgartirish shart** |
+| env `JWT_SECRET` / `config.jwtSecret` | HWID xesh tuzi | ichki standart ⚠️ | **Production da o'zgartirish shart** |
+| env `DB_PATH` | sqlite yo'li | `./licenses.db` | Fly.io da: `/data/licenses.db` |
+| `config.licenseKeyPrefix` | kalit prefiksi | `EPIC` | masalan `EPIC-A1B2-...` |
 
-## API reference
+## API ma'lumotnoma
 
-Admin endpoints require Basic Auth: `Authorization: Basic base64(username:password)`.
+Admin endpointlar Basic Auth talab qiladi: `Authorization: Basic base64(username:password)`.
 
-### Public (called by plugins)
+### Ommaviy (plaginlar chaqiradi)
 
-**`POST /api/verify`** — verify a license:
+**`POST /api/verify`** — litsenziyani tekshirish:
 ```json
 {
   "licenseKey": "EPIC-XXXX-XXXX-XXXX-XXXX",
@@ -87,7 +87,7 @@ Admin endpoints require Basic Auth: `Authorization: Basic base64(username:passwo
   "pluginVersion": "1.0.0"
 }
 ```
-Success → `{ "success": true, "message": "...", "data": { "pluginName", "pluginVersion", "expiresAt", "maxServers" } }`.
+Muvaffaqiyatli → `{ "success": true, "message": "...", "data": { "pluginName", "pluginVersion", "expiresAt", "maxServers" } }`.
 
 **`POST /api/servers/heartbeat`** — `{ licenseKey, serverName, pluginName, pluginVersion, hwid, players, country }`
 
@@ -97,52 +97,52 @@ Success → `{ "success": true, "message": "...", "data": { "pluginName", "plugi
 
 ### Admin (Basic Auth)
 
-| Method | Endpoint | Description |
+| Metod | Endpoint | Tavsif |
 |---|---|---|
-| POST | `/api/register` | Create license (`pluginName`, `pluginVersion`, `ownerDiscord`, `ownerEmail`, `maxServers`, `expiresInDays`, `notes`) |
-| GET | `/api/list?status&pluginName&search&sortBy&sortOrder&page&limit` | List licenses |
-| GET | `/api/license/:key` | License detail + verify logs + IP history |
-| PUT | `/api/license/:key` | Update (`pluginVersion`, `ownerDiscord/Email/Telegram`, `maxServers`, `expiresAt`, `notes`) |
-| DELETE | `/api/license/:key` | Delete |
-| POST | `/api/license/:key/reset-hwid` | Unbind HWID |
-| POST | `/api/license/:key/copy` | Duplicate license (new key) |
+| POST | `/api/register` | Litsenziya yaratish (`pluginName`, `pluginVersion`, `ownerDiscord`, `ownerEmail`, `maxServers`, `expiresInDays`, `notes`) |
+| GET | `/api/list?status&pluginName&search&sortBy&sortOrder&page&limit` | Litsenziyalar ro'yxati |
+| GET | `/api/license/:key` | Litsenziya tafsiloti + tekshirish jurnali + IP tarixi |
+| PUT | `/api/license/:key` | Yangilash (`pluginVersion`, `ownerDiscord/Email/Telegram`, `maxServers`, `expiresAt`, `notes`) |
+| DELETE | `/api/license/:key` | O'chirish |
+| POST | `/api/license/:key/reset-hwid` | HWID bog'lanishni yechish |
+| POST | `/api/license/:key/copy` | Litsenziyani dublikatlash (yangi kalit) |
 | POST | `/api/revoke` / `/api/activate` | `{ licenseKey }` |
-| GET/POST/PUT/DELETE | `/api/plugins`, `/api/plugins/:name` | Plugin registry |
-| GET/POST | `/api/plugin/:name/versions`, `/api/plugin/:name/version` | Version publish (auto-update) |
-| GET | `/api/servers/online`, `/api/servers/all` | Server sessions |
-| GET/POST | `/api/customers`, `/api/customers/:id` | Customers |
-| GET | `/api/activity`, `/api/activity/stats` | Logs + chart data |
-| GET | `/api/logs/export?format=csv` | Export logs |
-| GET | `/api/security` | Failed attempts, HWID mismatches, events |
-| GET/POST | `/api/notifications`, `/api/notifications/read`, `/api/notifications/clear` | Notifications |
+| GET/POST/PUT/DELETE | `/api/plugins`, `/api/plugins/:name` | Plaginlar reyestri |
+| GET/POST | `/api/plugin/:name/versions`, `/api/plugin/:name/version` | Versiya nashr qilish (avto-yangilanish) |
+| GET | `/api/servers/online`, `/api/servers/all` | Server sessiyalari |
+| GET/POST | `/api/customers`, `/api/customers/:id` | Mijozlar |
+| GET | `/api/activity`, `/api/activity/stats` | Jurnallar + grafik ma'lumotlar |
+| GET | `/api/logs/export?format=csv` | Jurnallarni eksport qilish |
+| GET | `/api/security` | Muvaffaqiyatsiz urinishlar, HWID nomuvofiqliklar, hodisalar |
+| GET/POST | `/api/notifications`, `/api/notifications/read`, `/api/notifications/clear` | Bildirishnomalar |
 | GET/POST | `/api/settings` | `{ settings: {...} }` |
 | POST | `/api/change-password` | `{ currentPassword, newPassword }` |
-| GET | `/api/stats`, `/api/dashboard/recent` | Dashboard stats |
+| GET | `/api/stats`, `/api/dashboard/recent` | Panel statistikasi |
 
-Full interactive reference is also built into the dashboard → **API Docs** page.
+To'liq interaktiv ma'lumotnoma panel ichida → **API Docs** sahifasida ham bor.
 
-### Minecraft plugin integration (Java example)
+### Minecraft plagin integratsiyasi (Java misol)
 
 ```java
-// Build HWID (must match server-side scheme) and POST /api/verify
+// HWID yasang (server sxemasiga mos bo'lishi shart) va POST /api/verify qiling
 String url = "https://your-server.fly.dev/api/verify";
 String json = new Gson().toJson(Map.of(
   "licenseKey", getConfig().getString("license-key"),
-  "hwid", computeHwid(), // SHA-256 or any stable server fingerprint
+  "hwid", computeHwid(), // SHA-256 yoki barqaror server barmoq izi
   "serverId", getServer().getServerId(),
   "serverIp", getServer().getIp(),
   "serverPort", getServer().getPort(),
   "pluginName", "EpicTools",
   "pluginVersion", getDescription().getVersion()
 ));
-// POST json, parse { success, message, data }. Cache result, re-verify on interval.
-// Send periodic POST /api/servers/heartbeat while running.
-// Send POST /api/crashes on uncaught exceptions.
+// POST json, { success, message, data } ni parse qiling. Natijani keshlang, oraliqda qayta tekshiring.
+// Ishlash davomida davriy POST /api/servers/heartbeat yuboring.
+// Tutib bo'lmaydigan xatolarda POST /api/crashes yuboring.
 ```
 
-## Deployment (Fly.io)
+## Deploy (Fly.io)
 
-See [`fly-deployment/README.md`](fly-deployment/README.md) for the full guide. Short version:
+To'liq qo'llanma: [`fly-deployment/README.md`](fly-deployment/README.md). Qisqacha:
 
 ```bash
 fly launch --no-deploy
@@ -152,18 +152,18 @@ fly deploy
 curl https://<app>.fly.dev/api/health
 ```
 
-Notes: SQLite lives on the persistent volume (`/data/licenses.db`); without the volume data is lost on restart. Keep `min_machines_running = 0` for free-tier friendliness. Back up via `fly ssh sftp get /data/licenses.db`.
+Eslatma: SQLite persistent volume da yashaydi (`/data/licenses.db`); volume siz qayta ishga tushganda ma'lumot yo'qoladi. Bepul tarif uchun `min_machines_running = 0` qoldiring. Zaxira: `fly ssh sftp get /data/licenses.db`.
 
-## Security notes
+## Xavfsizlik eslatmalari
 
-- Change `ADMIN_PASSWORD` and `JWT_SECRET` before exposing publicly (server logs a warning on defaults).
-- Admin API uses Basic Auth — always serve behind HTTPS (Fly.io `force_https = true` is already set).
-- `licenses.db*` and `config.json` are git-ignored; never commit real credentials or production databases.
-- Failed verifies / invalid keys / HWID mismatches are logged to `security_events` — review dashboard → Security.
+- Ommaga ochishdan oldin `ADMIN_PASSWORD` va `JWT_SECRET` ni o'zgartiring (standart qiymatda server ogohlantirish log yozadi).
+- Admin API Basic Auth ishlatadi — doim HTTPS ortida ishlating (Fly.io `force_https = true` allaqachon yoqilgan).
+- `licenses.db*` va `config.json` git-ignore qilingan; real parol yoki production bazani hech qachon commit qilmang.
+- Muvaffaqiyatsiz tekshirishlar / noto'g'ri kalitlar / HWID nomuvofiqliklar `security_events` ga yoziladi — panel → Xavfsizlik bo'limida ko'ring.
 
-## License
+## Litsenziya
 
-PolyForm Noncommercial 1.0.0 — see [LICENSE](LICENSE).
+PolyForm Noncommercial 1.0.0 — qarang [LICENSE](LICENSE).
 
-You may use, modify and share this project for **noncommercial purposes only**.
-Commercial use — including selling the software or modified versions — is prohibited.
+Bu loyihadan faqat **notijorat maqsadlarda** foydalanish, o'zgartirish va ulashish mumkin.
+Tijorat maqsadida foydalanish — dasturni yoki o'zgartirilgan versiyalarni sotish ham — taqiqlangan.

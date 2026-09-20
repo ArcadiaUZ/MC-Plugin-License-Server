@@ -1,16 +1,16 @@
-# EpicServer License Server - Fly.io Deployment Guide
+# EpicServer License Server - Fly.io Deploy qo'llanma
 
-## 📋 Requirements
+## 📋 Talablar
 
-- [Fly.io account](https://fly.io) (Free tier: 3 VMs, 3GB persistent volume)
-- [Fly CLI](https://fly.io/docs/hands-on/install-flyctl/) installed on your machine
-- Git (optional, for version control)
+- [Fly.io akkaunt](https://fly.io) (Bepul tarif: 3 ta VM, 3GB persistent volume)
+- Kompyuteringizda o'rnatilgan [Fly CLI](https://fly.io/docs/hands-on/install-flyctl/)
+- Git (ixtiyoriy, versiya nazorati uchun)
 
 ---
 
-## 🚀 Step-by-Step Deployment
+## 🚀 Bosqichma-bosqich deploy
 
-### 1. Install Fly CLI and Login
+### 1. Fly CLI ni o'rnatish va login
 
 ```bash
 # Windows (PowerShell)
@@ -19,189 +19,189 @@ iwr https://fly.io/install.ps1 -useb | iex
 # macOS / Linux
 curl -L https://fly.io/install.sh | sh
 
-# Login to Fly.io
+# Fly.io ga login
 fly auth login
 ```
 
-### 2. Launch the App
+### 2. Ilovani yaratish
 
 ```bash
-# Navigate to your project directory
-cd C:\Users\Epic\Documents\MC project\EpicServer\Sources\LicenseServer
+# Loyiha papkasiga o'ting
+cd "D:\Loyihalar\MC_Loyhalar\SMP Plugins\LicenseServer"
 
-# Create a new Fly.io app (interactive)
+# Yangi Fly.io app yarating (interaktiv)
 fly launch --no-deploy
 ```
 
-When prompted:
-- **App name:** Choose a unique name (e.g., `epic-license-server`)
-- **Region:** Pick the closest to your users (e.g., `ams` for Europe, `iad` for US East)
-- **Would you like to set up a Postgresql database?** → `No` (we use SQLite)
-- **Would you like to deploy now?** → `No` (we need to set secrets first)
+So'ralganda:
+- **App nomi:** Noyob nom tanlang (masalan `epic-license-server`)
+- **Region:** Foydalanuvchilarga eng yaqinini tanlang (masalan Yevropa uchun `ams`, AQSh sharqi uchun `iad`)
+- **Postgresql baza kerakmi?** → `No` (biz SQLite ishlatamiz)
+- **Hozir deploy qilinsinmi?** → `No` (avval secretlarni o'rnatish kerak)
 
-This will create a `fly.toml` file. **Replace it with the `fly.toml` provided in this project.**
+Bu `fly.toml` fayl yaratadi. **Uni loyihadagi tayyor `fly.toml` bilan almashtiring.**
 
-### 3. Set Sensitive Environment Variables (Secrets)
+### 3. Maxfiy muhit o'zgaruvchilari (Secrets)
 
 ```bash
-# Set admin password (REQUIRED - change to a strong password!)
-fly secrets set ADMIN_PASSWORD=YourStrongAdminPassword123!
+# Admin parol (MAJBURIY - kuchli parol qo'ying!)
+fly secrets set ADMIN_PASSWORD=JudaKuchliParol123!
 
-# Set JWT secret (REQUIRED - generate a random string)
+# JWT secret (MAJBURIY - tasodifiy satr yarating)
 fly secrets set JWT_SECRET=$(openssl rand -hex 32)
-# On Windows PowerShell:
-# fly secrets set JWT_SECRET="your-random-64-char-hex-string-here"
+# Windows PowerShell da:
+# fly secrets set JWT_SECRET="64-belgili-tasodifiy-hex-satr"
 
-# Optional: Override admin username
+# Ixtiyoriy: admin loginni o'zgartirish
 fly secrets set ADMIN_USERNAME=admin
 ```
 
-> ⚠️ **IMPORTANT:** These secrets are encrypted and never exposed in logs.
-> The server will FAIL TO START if `ADMIN_PASSWORD` and `JWT_SECRET` are not set.
+> ⚠️ **MUHIM:** Bu secretlar shifrlanadi va loglarda ko'rinmaydi.
+> Agar `ADMIN_PASSWORD` va `JWT_SECRET` o'rnatilmasa server **ISHGA TUSHMAYDI**.
 
-### 4. Create Persistent Volume for SQLite Database
+### 4. SQLite uchun persistent Volume yaratish
 
 ```bash
-# Create a 1GB volume named "license_data" in your region
-# Replace "ams" with your chosen region
+# Tanlangan regionda 1GB "license_data" nomli volume yarating
+# "ams" ni o'z regioningizga almashtiring
 fly volumes create license_data --region ams --size 1
 ```
 
-> 💡 **Why this is needed:** SQLite stores data in a file. Without a persistent volume,
-> your database would be deleted every time the app restarts or scales to zero.
-> The volume is mounted at `/data` and the database is stored at `/data/licenses.db`.
+> 💡 **Nega kerak:** SQLite ma'lumotni faylda saqlaydi. Persistent volume bo'lmasa,
+> app har qayta ishga tushganda yoki nolga scale bo'lganda baza o'chib ketadi.
+> Volume `/data` ga ulanadi, baza `/data/licenses.db` da saqlanadi.
 
-### 5. Deploy the App
+### 5. Deploy qilish
 
 ```bash
-# Deploy using the Dockerfile
+# Dockerfile orqali deploy
 fly deploy
 ```
 
-### 6. Verify Deployment
+### 6. Tekshirish
 
 ```bash
-# Open the app in browser
+# Brauzerda ochish
 fly open
 
-# Check health endpoint
+# Health endpointni tekshirish
 curl https://your-app-name.fly.dev/api/health
 
-# View logs
+# Loglarni ko'rish
 fly logs
 ```
 
-Expected health response:
+Kutilgan health javobi:
 ```json
 {"success":true,"status":"running","timestamp":...,"version":"1.0.0"}
 ```
 
 ---
 
-## 🔐 Managing Secrets
+## 🔐 Secretlarni boshqarish
 
-### View all secrets
+### Barcha secretlarni ko'rish
 ```bash
 fly secrets list
 ```
 
-### Update a secret
+### Secretni yangilash
 ```bash
-fly secrets set ADMIN_PASSWORD=new-password-here
-# Then redeploy:
+fly secrets set ADMIN_PASSWORD=yangi-parol
+# Keyin qayta deploy:
 fly deploy
 ```
 
-### Remove a secret
+### Secretni o'chirish
 ```bash
 fly secrets unset SECRET_NAME
 ```
 
 ---
 
-## 💾 SQLite Database Management
+## 💾 SQLite bazani boshqarish
 
-### Backup the database
+### Bazani zaxiralash
 ```bash
-# SSH into the running machine
+# Ishlayotgan mashinaga SSH orqali kiring
 fly ssh console
 
-# Inside the container, backup the database
+# Konteyner ichida zaxira oling
 cp /data/licenses.db /data/licenses.db.backup
 
-# Or copy to your local machine
+# Yoki lokal kompyuterga ko'chiring
 fly ssh sftp get /data/licenses.db ./licenses_backup.db
 ```
 
-### Restore the database
+### Bazani tiklash
 ```bash
-# Upload your backup
+# Zaxirani yuklang
 fly ssh sftp put ./licenses_backup.db /data/licenses.db
 
-# Restart the app
+# App ni qayta ishga tushiring
 fly deploy
 ```
 
-### Check volume status
+### Volume holatini tekshirish
 ```bash
 fly volumes list
 ```
 
 ---
 
-## 📊 Monitoring
+## 📊 Kuzatuv (Monitoring)
 
-### View logs
+### Loglarni ko'rish
 ```bash
-# Live logs
+# Jonli loglar
 fly logs
 
-# Recent logs
+# So'nggi loglar
 fly logs --tail 50
 ```
 
-### Check app status
+### App holati
 ```bash
 fly status
 fly info
 ```
 
-### Scale (if needed)
+### Scale (kerak bo'lsa)
 ```bash
-# Scale to 1 machine (always running)
+# 1 ta mashina (doim ishlaydi)
 fly scale count 1
 
-# Scale to 0 (auto-stop when idle - free tier friendly)
+# 0 ga scale (bo'sh turganda avtomatik o'chadi - bepul tarif uchun qulay)
 fly scale count 0
 ```
 
 ---
 
-## 🛠 Common Issues & Solutions
+## 🛠 Ko'p uchraydigan muammolar va yechimi
 
-### Issue: App fails to start
+### Muammo: App ishga tushmayapti
 ```bash
-# Check logs
+# Loglarni tekshiring
 fly logs
 
-# Common causes:
-# 1. ADMIN_PASSWORD or JWT_SECRET not set
-# 2. Volume not created
-# 3. Port mismatch (Dockerfile uses 8080, fly.toml must match)
+# Ko'p uchraydigan sabablar:
+# 1. ADMIN_PASSWORD yoki JWT_SECRET o'rnatilmagan
+# 2. Volume yaratilmagan
+# 3. Port mos emas (Dockerfile 8080 ishlatadi, fly.toml ham mos bo'lishi shart)
 ```
 
-### Issue: Database reset after restart
+### Muammo: Qayta ishga tushganda baza tozalanib ketdi
 ```bash
-# Check if volume exists
+# Volume borligini tekshiring
 fly volumes list
 
-# If no volume, create one:
+# Bo'lmasa yarating:
 fly volumes create license_data --region ams --size 1
 ```
 
-### Issue: "Out of memory" errors
+### Muammo: "Out of memory" xatolari
 ```bash
-# Increase memory allocation in fly.toml:
+# fly.toml da xotirani oshiring:
 # [[vm]]
 #   size = "shared-cpu-1x"
 #   memory = "512mb"
@@ -209,34 +209,35 @@ fly volumes create license_data --region ams --size 1
 
 ---
 
-## 🔄 Updating the App
+## 🔄 App ni yangilash
 
 ```bash
-# Make your code changes, then:
+# Kodni o'zgartirgach:
 fly deploy
 ```
 
 ---
 
-## 💰 Free Tier Limits
+## 💰 Bepul tarif limitlari
 
-| Resource | Free Tier Limit |
-|----------|----------------|
-| VMs | 3 shared VMs |
-| RAM | 256MB per VM |
-| Storage | 3GB total |
-| Bandwidth | 160GB/month |
-| Volume | 1GB per volume |
+| Resurs | Bepul limit |
+|----------|---------------|
+| VM | 3 ta shared VM |
+| RAM | Har bir VM ga 256MB |
+| Xotira | Jami 3GB |
+| Trafik | 160GB/oy |
+| Volume | Har bir volume ga 1GB |
 
-To stay within free tier:
-- Keep `min_machines_running = 0` (auto-stops when idle)
-- Use 1GB volume size
-- Monitor bandwidth usage
+Bepul tarifda qolish uchun:
+- `min_machines_running = 0` qoldiring (bo'sh turganda avtomatik o'chadi)
+- 1GB volume ishlating
+- Trafik sarfini kuzatib boring
 
 ---
 
-## 🧹 Cleanup (if needed)
+## 🧹 Tozalash (kerak bo'lsa)
 
 ```bash
-# Delete the app and all resources
+# App va barcha resurslarni o'chirish
 fly apps destroy epic-license-server
+```
